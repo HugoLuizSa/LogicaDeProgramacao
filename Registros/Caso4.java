@@ -1,4 +1,4 @@
-package lista1;
+package registros;
 
 public class Caso4 {
 
@@ -27,15 +27,25 @@ public class Caso4 {
 		Loja loja3 = new Loja();
 		loja3 = criarLoja("Loja C", "9999-7777");
 		Produto produto3 = new Produto();
-		produto1 = criarProduto(2.99, loja3);
+		produto3 = criarProduto(2.99, loja3);
 
 		Produto[] arrayProdutos = { produto1, produto2, produto3 };
 		
 		double precoMedio = calcularPrecoMedio(arrayProdutos);
 	
-		System.out.println("preco médio "+precoMedio);
+		System.out.println("preco médio R$ :"+precoMedio);
 		
+		System.out.println();
+
 		System.out.println("Lista de lojas que estão com o preço abaixo da média");
+		
+		System.out.println();
+		
+		Loja l1 = new Loja();
+		
+		l1=getLoja(produto3);
+		
+		//System.out.println(produto3.loja.nome);
 		
 		lojasPrecoAbaixo(arrayProdutos, precoMedio);
 	}
@@ -65,13 +75,17 @@ public class Caso4 {
 	public static void lojasPrecoAbaixo(Produto [] produtos,double precoMedio) {
 		for (int i = 0; i < produtos.length; i++) {
 			if(produtos[i].precoProduto<precoMedio) {
-				//Loja loja = new Loja();
-				//loja=produtos[i].loja;
-				System.out.println("A loja : "+produtos[i].loja.nome+"\n com telefone "+produtos[i].loja.telefone+" está com os preços abaixo da média !");
-			}else {
-				System.out.println("else");
+				Loja loja = new Loja();
+				loja=produtos[i].loja;
+				System.out.println("A loja : "+loja.nome+"\n com telefone "+loja.telefone+" está com os preços abaixo da média !");
 			}
 		}
+	}
+	
+	public static Loja getLoja(Produto p) {
+		Loja l = new Loja();
+		l=p.loja;	
+		return l;
 	}
 	
 	
