@@ -34,19 +34,35 @@ public class SituacaoDeAprendizado {
 	
 	public static void main(String[] args) {
 
-		int menuPrincipal;
+		int menuPrincipal=0;
 		int menuVenda;
 		int menuProduto;
 		int menuCliente;
+		int menuRelatorios;
 		
 		//menu princial
 		do {
+			try {
 			menuPrincipal=Integer.parseInt(JOptionPane.showInputDialog(menuPrincial()));
-			
 			//vendas
 			if(menuPrincipal==1) {
 				do {
 					menuVenda=Integer.parseInt(JOptionPane.showInputDialog(menuVendas()));
+					//criar venda
+					if(menuVenda==1){
+						CriarEditarVenda(0);
+					}
+					//editar venda
+					if(menuVenda==2){
+						int codVendaSeraEditata=Integer.parseInt(JOptionPane.showInputDialog("Informe o código da venda que será editada : "));
+						CriarEditarVenda(codVendaSeraEditata);
+					}
+					//vizualizar venda
+					if(menuVenda==3){
+						int codVendaSeraVizualizada=Integer.parseInt(JOptionPane.showInputDialog("Informe o código da venda que será vizualizada : "));
+						JOptionPane.showMessageDialog(null, listarVenda(codVendaSeraVizualizada)); 
+					}
+					
 				} while (menuVenda>0&&menuVenda<3);
 			}
 			
@@ -54,6 +70,22 @@ public class SituacaoDeAprendizado {
 			if(menuPrincipal==2) {
 				do {
 					menuProduto=Integer.parseInt(JOptionPane.showInputDialog(menuProdutos()));
+					//importar produtos
+					if(menuProduto==1) {
+						String produtosImportar=JOptionPane.showInputDialog("Importe os produtos : \n Exemplo : Teclado pc - 89,90; Monitor 22 - 899,90 ");
+						importarProdutos(produtosImportar);
+					}
+					
+					//editar produtos
+					if(menuProduto==2) {
+						editarProduto();
+					}
+					//vizualizar produtos
+					if(menuProduto==3) {
+						int codProdutoPesquisado =Integer.parseInt(JOptionPane.showInputDialog("Digite o código do produto que deseja verificar : "));
+						mostrarProduto(codProdutoPesquisado);
+					}
+					
 				} while (menuProduto>0&&menuProduto<3);
 			}
 			
@@ -61,9 +93,65 @@ public class SituacaoDeAprendizado {
 			if(menuPrincipal==3) {
 				do {
 					menuCliente=Integer.parseInt(JOptionPane.showInputDialog(menuClientes()));
+					
+					if(menuCliente==1) {
+						cadastrarCliente(0);
+					}
+					
+					if(menuCliente==2) {
+						int codClienteEditadar=Integer.parseInt(JOptionPane.showInputDialog("Informe o código do cliente que deseja editar"));
+						cadastrarCliente(codClienteEditadar);
+					}
+					
+					if(menuCliente==3) {
+						int codClientePesquisado =Integer.parseInt(JOptionPane.showInputDialog("Digite o código do cliente que deseja verificar : "));
+						vizualizarCliente(codClientePesquisado);
+					}
+					
 				} while (menuCliente>0&&menuCliente<3);
 			}
 			
+			if(menuPrincipal==4) {
+				menuRelatorios=Integer.parseInt(JOptionPane.showInputDialog("Informe o numero do relatório que você deseja tirar :\n"+menuRelatorios()));
+			
+				if(menuRelatorios==1) {
+					
+					String listaDeVendas=listarVendas();
+					
+					if(listaDeVendas.length()>2) {
+						JOptionPane.showMessageDialog(null, listaDeVendas);
+					}
+				}
+				
+				if(menuRelatorios==2){
+					System.out.print("relatorio de precos ordenados");
+					listarVendasOrdermMenorVenda();
+				}
+				
+				if(menuRelatorios==3) {
+					String listaProdutos=listarProdutos();
+					
+					//verificar se a lista de produtos está setada
+					if(listaProdutos.length()>2) {
+						JOptionPane.showMessageDialog(null, listaProdutos);
+					}
+					//JOptionPane.showMessageDialog(null, listarProdutos());
+				}
+				
+				if(menuRelatorios==4) {
+					listarProdutosOrdemPreco();
+				}
+
+				if(menuRelatorios==5) {
+					mostrarTodosClientes();
+				}
+			}
+			}catch (Exception e) {
+				do {
+					JOptionPane.showMessageDialog(null, "Somente numeros no menu !");
+					menuPrincipal=1;
+				} while (menuPrincipal<0);
+			}
 		} while (menuPrincipal>0&&menuPrincipal<5);
 	}
 
@@ -200,9 +288,34 @@ public class SituacaoDeAprendizado {
 		
 	}
 	
+	public static String listaProdutos(){
+		String listaProdutos="";
+		
+		for (int i = 0; i < produtos.length; i++) {
+			Produto produto= produtos[i];
+			if(produto==null) {
+				return listaProdutos;
+			}
+			listaProdutos+="cod :"+produto.cod+" desc : "+produto.desc+" Preço R$ : "+produto.preco+"\n";
+		}
+		
+		return listaProdutos;
+	}
+	
 	// 2 EDITAR PRODUTO
 	public static void editarProduto() {
-		int codProduto = Integer.parseInt(JOptionPane.showInputDialog("Informe o código do produto procurado : "));
+		
+		if(produtos[0]==null){
+			JOptionPane.showMessageDialog(null, "lista de Produtos se encontra vazia");
+			return;
+		}
+		
+		try {
+			int codProduto = Integer.parseInt(JOptionPane.showInputDialog("Informe o código do produto procurado : \n +Lista produtos : \n"+listaProdutos()));
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Você somente pode informar numeros");
+			return;
+		}
 
 		Produto prod = produtoValido(codProduto);
 
@@ -290,6 +403,11 @@ public class SituacaoDeAprendizado {
 		String nomeCliente;
 		int telefone = 0;
 
+		//validar se o cliente que será editado é válido
+		if(cod>0 && clienteValido(cod)==null) {
+			return cliente;
+		}
+		
 		nomeCliente = JOptionPane.showInputDialog("Informe o nome do cliente ");
 		if (!validarDescricaoProduto(nomeCliente)) {
 			JOptionPane.showMessageDialog(null, "nome deve conter somente letras ");
@@ -333,6 +451,7 @@ public class SituacaoDeAprendizado {
 			c.cpf = cpf;
 			c.nome = nomeCliente;
 			c.telefone = telefone;
+			JOptionPane.showMessageDialog(null,"Cliente editado com sucesso");
 			return c;
 		}
 
@@ -343,6 +462,7 @@ public class SituacaoDeAprendizado {
 		codCliente++;
 
 		if (cliente != null && cod == 0) {
+			JOptionPane.showMessageDialog(null,"Cliente cadastrado com sucesso");
 			addClienteToCliente(cliente);
 		}
 
@@ -356,6 +476,7 @@ public class SituacaoDeAprendizado {
 			Cliente cliente = clientes[i];
 
 			if (cliente == null) {
+				JOptionPane.showMessageDialog(null, "Código não encontrado no sistema");
 				return;
 			}
 
@@ -419,10 +540,16 @@ public class SituacaoDeAprendizado {
 				return;
 			}
 			
+			if(vendas[0]==null) {
+				JOptionPane.showMessageDialog(null, "Lista de vendas vazia");
+				return;
+			}
+			
 			//caso válida copiar o código da venda original e editar todo o resto;
 			int codigoOriginal =vendaEditada.cod;
 			venda=vendaEditada;
 			venda.cod=codigoOriginal;
+			venda.produtos=new Produto[5];
 		}
 		
 		//Pedir a desc da venda
@@ -532,7 +659,7 @@ public class SituacaoDeAprendizado {
 				return;
 			}
 		}
-		JOptionPane.showInputDialog("Vendas atigiu o limite;");
+		JOptionPane.showMessageDialog(null,"Vendas atigiu o limite;");
 	}
 	
 	public static double calcularValorDaVenda(Venda venda) {
@@ -570,20 +697,33 @@ public class SituacaoDeAprendizado {
 	
 	public static String listarVendas() {
 		String vendaConcat="Listagem de vendas : \n";
-		String produtos="";
+		double totalFaturamento=0;
+		if(vendas[0]==null) {
+			JOptionPane.showMessageDialog(null, "Não há vendas para serem listadas");
+			return "";
+		}
+		
 		for (int i = 0; i < vendas.length; i++) {
 			Venda venda= vendas[i];
+			
 			if(venda==null) {
 				break;
 			}
+			
 			vendaConcat+="Cod : "+venda.cod+" descrição : "+venda.desc+" Cliente "+venda.cliente.nome+"\n Total : R$ "+venda.total+"\n";
+			totalFaturamento+=venda.total;
 		}
-		return vendaConcat;
+		return vendaConcat+"\n"+"Total Faturado R$ : "+totalFaturamento;
 	}
 	
 	public static String listarVenda(int cod) {
 		String vendaConcat="";
-		String produtos="";
+		
+		if(vendas[0]==null) {
+			JOptionPane.showMessageDialog(null, "Não há vendas cadastradas !");
+			return vendaConcat;
+		}
+		
 		for (int i = 0; i < vendas.length; i++) {
 			Venda venda= vendas[i];
 			if(venda==null) {
@@ -596,13 +736,76 @@ public class SituacaoDeAprendizado {
 		}
 		return vendaConcat;
 	}
+	
 	//RELATORIOS
 	//4 RELATORIOS
+	
+	//mostrar venda
+	/*public static String mostrarVenda(Venda venda) {
+		String dadosVenda="";
+			
+		if(venda==null) {
+			return dadosVenda;
+		}
+	
+		dadosVenda+="Cod : "+venda.cod+"Desc : "+venda.desc+" | Cliente : "+venda.cliente.nome+" Total: R$ "+venda.total;
+		
+		return dadosVenda;
+	}*/
+	
+	//2 ordenar pela menor venda
+	
+	public static boolean vendaValidaArrayVendas(Venda[]vendasArray,Venda venda) {
+		boolean contido =false;
+		
+		for (int i = 0; i < vendasArray.length; i++) {
+			Venda v = vendasArray[i];
+			
+			if(v==null) {
+				break;
+			}
+			
+			if(venda.cod==v.cod) {
+				contido=true;
+			}
+		}
+		
+		return contido;
+	}
+	
+	public static void listarVendasOrdermMenorVenda() {
+		//array que servirá para adicionar as vendas em ordem de valor
+		Venda [] vendasOrdenadas = new Venda[30];
+		Venda [] copiaVendas = new Venda[30];
+		
+		Venda menorVenda = new Venda();
+		double valorMaximo=999999999;
+		
+		
+		
+		String infoVenda="";
+		for (int i = 0; i < vendasOrdenadas.length; i++) {
+			Venda venda = vendasOrdenadas[i];
+			
+			if(venda==null) {
+				continue;
+			}
+			
+			infoVenda+="Cod : "+venda.cod +" Descrição :  "+venda.desc+" Cliente : "+venda.cliente.nome+" Total de venda : "+venda.total+"\n";
+		}
+		System.out.println("Final");
+		JOptionPane.showMessageDialog(null,infoVenda);
+	}
 	
 	//3 lista todos os produtos , do menor código para o maior código
 	public static String listarProdutos() {
 			String listaProduto = "Lista de produtos : \n";
 
+			if(produtos[0]==null) {
+				JOptionPane.showMessageDialog(null, "Lista de Preços está vazia :");
+				return listaProduto;
+			}
+			
 			for (int i = 0; i < produtos.length; i++) {
 				Produto produto = produtos[i];
 
@@ -618,6 +821,11 @@ public class SituacaoDeAprendizado {
 	
 	//4 Ordenado pelo preço do menor produto Mostrar todos os produtos com seus respectivos dados
 	public static void listarProdutosOrdemPreco() {
+		
+		if(produtos[0]==null) {
+			JOptionPane.showMessageDialog(null, "Lista de Preços está vazia :");
+			return;
+		}
 		
 		Produto [] newProdutos= new Produto[100];
 		Produto [] produtosOrdenados= new Produto[100];
@@ -718,12 +926,19 @@ public class SituacaoDeAprendizado {
 		return p;
 	}
 	
+	//mostrar todos os clientes
 	//5 mostrar todos os clientes pela ordem do codigo (menor para o maior)
 	public static String mostrarTodosClientes() {
 			String todosClientes="";
 			
+			if(clientes[0]==null) {
+				JOptionPane.showMessageDialog(null, "Lista de clientes vazia ");
+				return todosClientes;
+			}
+			
 			for (int i = 0; i < clientes.length; i++) {
 				Cliente cliente = clientes[i];
+				
 				
 				if(cliente==null) {
 					break;
@@ -773,12 +988,12 @@ public class SituacaoDeAprendizado {
 					"4-Voltar\n";
 	}
 	//menu relatorios
-		public static String menuRelatorios() {
-				return "1-Relatorio de vendas - ordenar vendas pelo código crescente \n"+
-						"2-Relatorio de vendas - ordenar vendas pela menor venda \n"+
-						"3-Relatorio de produto - ordenar vendas pelo código crescente \n"+
-						"3-Relatorio de produto - ordenar vendas pelo preco crescente \n"+
-						"3-Relatorio de cliente - ordenar pelo código crescente \n"+
+	public static String menuRelatorios() {
+				return "1-Relatorio de vendas - ordenar vendas , pelo código crescente \n"+
+						"2-Relatorio de vendas - ordenar vendas , pela menor venda \n"+
+						"3-Relatorio de produto - ordenar produtos , pelo código crescente \n"+
+						"4-Relatorio de produto - ordenar produtos , pelo preco crescente \n"+
+						"5-Relatorio de cliente - ordenar clientes , pelo código crescente \n"+
 						"6-Voltar\n";
 		}
 }
