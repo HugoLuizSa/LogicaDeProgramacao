@@ -1,3 +1,5 @@
+import java.util.Iterator;
+
 import javax.swing.JOptionPane;
 
 public class SituacaoDeAprendizado {
@@ -112,6 +114,9 @@ public class SituacaoDeAprendizado {
 			}
 			
 			if(menuPrincipal==4) {
+				do {
+					
+				
 				menuRelatorios=Integer.parseInt(JOptionPane.showInputDialog("Informe o numero do relatório que você deseja tirar :\n"+menuRelatorios()));
 			
 				if(menuRelatorios==1) {
@@ -143,8 +148,11 @@ public class SituacaoDeAprendizado {
 				}
 
 				if(menuRelatorios==5) {
-					mostrarTodosClientes();
+					System.out.println("entrou relatorio clientes");
+					JOptionPane.showMessageDialog(null, mostrarTodosClientes());
 				}
+				
+				} while (menuRelatorios>0 && menuRelatorios<6);
 			}
 			}catch (Exception e) {
 				do {
@@ -258,18 +266,16 @@ public class SituacaoDeAprendizado {
 		for (int i = 0; i < produtos.length; i++) {
 			Produto produto = produtos[i];
 
-			if (produto == null) {
-				prod = null;
-				JOptionPane.showMessageDialog(null, "Código não encontrado no sistema");
-				return prod;
+			if(produto==null) {
+				JOptionPane.showMessageDialog(null,"Produto não encontrado no sistema !");
+				return produto;
 			}
-
+			
 			if (produto.cod == codProduto) {
 				prod = produto;
 				return prod;
 			}
 		}
-
 		return prod;
 	}
 
@@ -309,9 +315,9 @@ public class SituacaoDeAprendizado {
 			JOptionPane.showMessageDialog(null, "lista de Produtos se encontra vazia");
 			return;
 		}
-		
+		int codProduto;
 		try {
-			int codProduto = Integer.parseInt(JOptionPane.showInputDialog("Informe o código do produto procurado : \n +Lista produtos : \n"+listaProdutos()));
+			codProduto = Integer.parseInt(JOptionPane.showInputDialog("Informe o código do produto procurado : \n +Lista produtos : \n"+listaProdutos()));
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Você somente pode informar numeros");
 			return;
@@ -651,6 +657,7 @@ public class SituacaoDeAprendizado {
 		}
 	}
 	
+	
 	public static void addVendaArrayVendas(Venda[] vendaAdd,Venda v) {
 		for (int i = 0; i < vendaAdd.length; i++) {
 			Venda venda = vendaAdd[i];
@@ -662,6 +669,7 @@ public class SituacaoDeAprendizado {
 		JOptionPane.showMessageDialog(null,"Vendas atigiu o limite;");
 	}
 	
+	//calcular o total da venda apartir do preço dos produtos
 	public static double calcularValorDaVenda(Venda venda) {
 		double valor = 0;
 		
@@ -675,6 +683,7 @@ public class SituacaoDeAprendizado {
 		return valor;
 	}
 	
+	//verifica se uma venda é valida apartir do seu codigo e então retorna a mesma
 	public static Venda vendaValida(int codVenda) {
 		Venda v = new Venda();
 		
@@ -695,6 +704,7 @@ public class SituacaoDeAprendizado {
 		return v;
 	}
 	
+	//retorna uma string com a lista de vendas
 	public static String listarVendas() {
 		String vendaConcat="Listagem de vendas : \n";
 		double totalFaturamento=0;
@@ -716,6 +726,7 @@ public class SituacaoDeAprendizado {
 		return vendaConcat+"\n"+"Total Faturado R$ : "+totalFaturamento;
 	}
 	
+	//lista uma venda apartir do codigo
 	public static String listarVenda(int cod) {
 		String vendaConcat="";
 		
@@ -773,28 +784,109 @@ public class SituacaoDeAprendizado {
 		return contido;
 	}
 	
-	public static void listarVendasOrdermMenorVenda() {
-		//array que servirá para adicionar as vendas em ordem de valor
-		Venda [] vendasOrdenadas = new Venda[30];
-		Venda [] copiaVendas = new Venda[30];
+	//retona a posicao de uma venda
+	public static int posicaoVenda(Venda[] vendasArray,Venda venda) {
+		int posicao = 0;
+		
+		for (int i = 0; i < vendasArray.length; i++) {
+			Venda v = vendasArray[i];
+			
+			if(v==null) {
+				return posicao;
+			}
+			
+			if(v==venda) {
+				posicao=i;
+			}
+		}
+		return posicao;
+	}
+	
+	
+	//retorna a menor venda de um array
+	public static Venda retornaMenorVenda(Venda[] vendas) {
 		
 		Venda menorVenda = new Venda();
-		double valorMaximo=999999999;
+		double valorMaximo=9999999;
+		menorVenda.total=valorMaximo;
 		
-		
-		
-		String infoVenda="";
-		for (int i = 0; i < vendasOrdenadas.length; i++) {
-			Venda venda = vendasOrdenadas[i];
+		for (int i = 0; i < vendas.length; i++) {
+			Venda venda = vendas[i];
 			
+			if(venda==null) {
+				break;
+			}
+			
+			if(menorVenda.total<valorMaximo) {
+				menorVenda=venda;
+			}
+		}
+		
+		return menorVenda;
+	}
+	
+	public static Venda[] copiarArrayVendas() {
+		Venda[] arrayCopiado = new Venda[30];
+		
+		for (int i = 0; i < vendas.length; i++) {
+			Venda venda = vendas[i];
+			System.out.println("0");
+			if(venda==null) {
+				System.out.println("00");
+				return arrayCopiado;
+			}else {
+				arrayCopiado[i].cliente=venda.cliente;
+				arrayCopiado[i].cod=venda.cod;
+				arrayCopiado[i].desc=venda.desc;
+				arrayCopiado[i].produtos=venda.produtos;
+				arrayCopiado[i].total=venda.total;
+				System.out.println("000");
+			}
+			
+		}
+		
+		return arrayCopiado;
+	}
+	
+	public static void listarVendasOrdermMenorVenda() {
+		//array que servirá para adicionar as vendas em ordem de valor
+
+		//testar o array copiado	
+		
+		Venda [] VendaOrdenados= new Venda[30];
+		double precoMaximo=999999999;
+		
+		//copiar todos produtos para newProdutos
+		for (int i = 0; i < vendas.length; i++) {
+			
+			if(vendas[i]==null) {
+				break;
+			}
+			VendaOrdenados[i]=new Venda();
+			System.out.println("1");
+			VendaOrdenados[i].cod=vendas[i].cod;
+			System.out.println("2");
+			VendaOrdenados[i].desc=vendas[i].desc;
+			System.out.println("3");
+			VendaOrdenados[i].cliente=vendas[i].cliente;
+			System.out.println("4");
+			VendaOrdenados[i].produtos=vendas[i].produtos;
+			System.out.println("5");
+			VendaOrdenados[i].total=vendas[i].total;
+			System.out.println("6");
+		}
+		
+		System.out.println("7");
+		
+		for (int i = 0; i < VendaOrdenados.length; i++) {
+			System.out.println("8");
+			Venda venda = VendaOrdenados[i];
 			if(venda==null) {
 				continue;
 			}
-			
-			infoVenda+="Cod : "+venda.cod +" Descrição :  "+venda.desc+" Cliente : "+venda.cliente.nome+" Total de venda : "+venda.total+"\n";
+			System.out.println("cod "+venda.cod+" total R$: "+venda.total+"\n ");
 		}
-		System.out.println("Final");
-		JOptionPane.showMessageDialog(null,infoVenda);
+		
 	}
 	
 	//3 lista todos os produtos , do menor código para o maior código
